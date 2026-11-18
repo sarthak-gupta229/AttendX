@@ -1,0 +1,46 @@
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.inputRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+@media (min-width: 480px) {
+  .inputRow {
+    flex-direction: row;
+    align-items: stretch;
+  }
+}
+
+.input {
+  flex: 1;
+  background-color: var(--bg-1);
+  color: var(--bone);
+  border: 1px solid var(--bg-2);
+  border-radius: 0;
+  min-height: 48px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.input:focus-visible {
+  border-color: var(--accent);
+}
+
+.limitMessage {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: var(--led);
+  margin-top: 4px;
+}

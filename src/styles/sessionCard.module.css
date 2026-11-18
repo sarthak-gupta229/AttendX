@@ -1,0 +1,168 @@
+.card {
+  position: relative;
+  background-color: var(--bg-1);
+  border: 1px solid var(--bg-2);
+  border-radius: 0;
+  padding: 16px;
+  width: 100%;
+  content-visibility: auto;
+  contain-intrinsic-size: 120px;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+@media (hover: hover) {
+  .card:hover {
+    background-color: var(--moss);
+  }
+}
+
+.cardActive {
+  border-color: var(--accent);
+}
+
+.cursor {
+  position: absolute;
+  top: 14px;
+  left: 6px;
+  color: var(--accent);
+  font-size: 12px;
+  user-select: none;
+  animation: cursorStep 1s steps(2, start) infinite;
+}
+
+/* Mobile layout (default, 360px+) */
+.cardInner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Line 1: Header (name + rename) */
+.headerLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-left: 12px; /* space for cursor */
+}
+
+.sessionName {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--bone);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+}
+
+.sessionNameEditable {
+  cursor: pointer;
+  border-bottom: 1px dashed var(--bone-dim);
+}
+
+.nameInput {
+  background-color: var(--bg-0);
+  border: 1px solid var(--accent);
+  color: var(--bone);
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  padding: 6px 10px;
+  min-height: 44px;
+  width: 100%;
+}
+
+/* Line 2: Count and In/Out */
+.counterLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.countWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  user-select: none;
+}
+
+.countNumber {
+  font-family: var(--font-heading);
+  font-size: clamp(40px, 12vw, 72px);
+  line-height: 1;
+  font-weight: 700;
+  color: var(--bone);
+  transition: transform 0.1s steps(4);
+}
+
+.countLabel {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--bone-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+/* Line 3: Footer actions (reactions + remove) */
+.footerLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.reactionGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.removeGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Desktop layout (>= 768px): One horizontal row */
+@media (min-width: 768px) {
+  .cardInner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .headerLine {
+    flex: 1;
+    min-width: 160px;
+    padding-left: 14px;
+  }
+
+  .counterLine {
+    flex: 2;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .countWrapper {
+    flex: 0 0 auto;
+    min-width: 100px;
+  }
+
+  .footerLine {
+    flex: 1;
+    justify-content: flex-end;
+    margin-top: 0;
+    gap: 16px;
+  }
+}

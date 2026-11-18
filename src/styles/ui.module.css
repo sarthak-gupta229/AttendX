@@ -1,0 +1,112 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: var(--bg-1);
+  color: var(--bone);
+  border: 1px solid var(--bg-2);
+  border-radius: 0;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 16px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 16px;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.1s ease, transform 0.05s ease;
+}
+
+@media (hover: hover) {
+  .button:hover:not(:disabled) {
+    border-color: rgba(232, 230, 220, 0.4);
+  }
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
+  background-color: var(--accent-ink);
+}
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.inButton {
+  min-width: 64px;
+  min-height: 56px;
+  border-color: var(--sage);
+  color: var(--sage);
+}
+
+@media (hover: hover) {
+  .inButton:hover:not(:disabled) {
+    background-color: rgba(159, 191, 142, 0.15);
+    border-color: var(--sage);
+  }
+}
+
+.outButton {
+  min-width: 64px;
+  min-height: 56px;
+  border-color: var(--led);
+  color: var(--led);
+}
+
+@media (hover: hover) {
+  .outButton:hover:not(:disabled) {
+    background-color: rgba(226, 59, 59, 0.15);
+    border-color: var(--led);
+  }
+}
+
+.emojiButton {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 6px;
+  font-size: 20px;
+  background-color: transparent;
+  border: 1px solid var(--bg-2);
+}
+
+@media (hover: hover) {
+  .emojiButton:hover:not(:disabled) {
+    border-color: var(--bone-dim);
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+}
+
+.dangerButton {
+  min-height: 44px;
+  padding: 6px 12px;
+  font-size: 14px;
+  color: var(--led);
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+@media (hover: hover) {
+  .dangerButton:hover:not(:disabled) {
+    border-color: var(--led);
+  }
+}
+
+.panel {
+  background-color: var(--bg-1);
+  border: 1px solid var(--bg-2);
+  border-radius: 0;
+  padding: 16px;
+}
+
+.pixelLabel {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  line-height: 12px;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  letter-spacing: 0.5px;
+}

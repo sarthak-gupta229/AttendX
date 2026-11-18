@@ -1,0 +1,151 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--bg-2);
+}
+
+@media (min-width: 600px) {
+  .header {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+}
+
+.titleArea {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: 32px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: var(--bone);
+  letter-spacing: 0.5px;
+}
+
+.subtitle {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: var(--sage);
+  margin-top: 4px;
+}
+
+.metaArea {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+@media (min-width: 600px) {
+  .metaArea {
+    align-items: flex-end;
+  }
+}
+
+.userStatus {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--bone-dim);
+  text-transform: uppercase;
+}
+
+.authLink {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: var(--accent);
+  text-decoration: none;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (hover: hover) {
+  .authLink:hover {
+    text-decoration: underline;
+  }
+}
+
+.sessionList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.emptyState {
+  padding: 32px 16px;
+  text-align: center;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--bone-dim);
+  border: 1px dashed var(--bg-2);
+}
+
+.toastError {
+  background-color: rgba(226, 59, 59, 0.2);
+  border: 1px solid var(--led);
+  color: var(--bone);
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.viewControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 4px 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--bg-2);
+}
+
+.viewTabs {
+  display: flex;
+  gap: 8px;
+}
+
+.viewTabBtn {
+  background: transparent;
+  border: 1px solid var(--bg-2);
+  color: var(--bone-dim);
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  padding: 6px 14px;
+  cursor: pointer;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  touch-action: manipulation;
+  transition: all 0.15s ease;
+}
+
+@media (hover: hover) {
+  .viewTabBtn:hover {
+    border-color: var(--accent);
+    color: var(--bone);
+  }
+}
+
+.viewTabBtnActive {
+  background-color: var(--bg-1);
+  border-color: var(--accent);
+  color: var(--bone);
+}

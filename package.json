@@ -1,0 +1,45 @@
+{
+  "name": "live-session-counter",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch server.ts",
+    "build": "next build",
+    "start": "NODE_ENV=production tsx server.ts",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "create-user": "tsx scripts/create-user.ts",
+    "ws:smoke": "tsx scripts/ws-smoke.ts"
+  },
+  "dependencies": {
+    "@types/three": "^0.187.0",
+    "argon2": "^0.41.1",
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.4.7",
+    "jose": "^6.0.8",
+    "mongodb": "^6.13.0",
+    "next": "^15.1.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.6.1",
+    "three": "^0.187.0",
+    "ws": "^8.18.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.1",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.13.4",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@types/ws": "^8.5.14",
+    "eslint": "^9.20.1",
+    "eslint-config-next": "^15.1.7",
+    "mongodb-memory-server": "^10.1.4",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5"
+  }
+}
