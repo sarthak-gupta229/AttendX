@@ -62,18 +62,16 @@ export default function Console3D({
   const pressAnimations = useRef<{
     btnA: number;
     btnB: number;
-    dpadUp: number;
-    dpadDown: number;
-    dpadLeft: number;
-    dpadRight: number;
+    dpadX: number;
+    dpadY: number;
+    dpadTimer: number;
     btnStart: number;
   }>({
     btnA: 0,
     btnB: 0,
-    dpadUp: 0,
-    dpadDown: 0,
-    dpadLeft: 0,
-    dpadRight: 0,
+    dpadX: 0,
+    dpadY: 0,
+    dpadTimer: 0,
     btnStart: 0,
   });
 
@@ -128,6 +126,71 @@ export default function Console3D({
     }
   }, [activeTab, selectedSession, isConnected, canEdit, onOut]);
 
+  // D-Pad Direction Handlers
+  const handleDpadUp = useCallback(() => {
+    pressAnimations.current.dpadY = 1;
+    pressAnimations.current.dpadX = 0;
+    pressAnimations.current.dpadTimer = 8;
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(8);
+    }
+
+    if (activeTab === "directory") {
+      setFocusedDirectoryIndex((prev) => Math.max(0, prev - 1));
+    } else {
+      handlePrevRoom();
+    }
+  }, [activeTab, handlePrevRoom]);
+
+  const handleDpadDown = useCallback(() => {
+    pressAnimations.current.dpadY = -1;
+    pressAnimations.current.dpadX = 0;
+    pressAnimations.current.dpadTimer = 8;
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(8);
+    }
+
+    if (activeTab === "directory") {
+      setFocusedDirectoryIndex((prev) => Math.min(sessions.length - 1, prev + 1));
+    } else {
+      handleNextRoom();
+    }
+  }, [activeTab, sessions.length, handleNextRoom]);
+
+  const handleDpadLeft = useCallback(() => {
+    pressAnimations.current.dpadX = -1;
+    pressAnimations.current.dpadY = 0;
+    pressAnimations.current.dpadTimer = 8;
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(8);
+    }
+
+    if (activeTab === "room") {
+      handlePrevRoom();
+    } else if (activeTab === "directory") {
+      setActiveTab("room");
+    } else if (activeTab === "add") {
+      setActiveTab("directory");
+    }
+  }, [activeTab, handlePrevRoom]);
+
+  const handleDpadRight = useCallback(() => {
+    pressAnimations.current.dpadX = 1;
+    pressAnimations.current.dpadY = 0;
+    pressAnimations.current.dpadTimer = 8;
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(8);
+    }
+
+    if (activeTab === "room") {
+      handleNextRoom();
+    } else if (activeTab === "directory") {
+      if (canEdit) {
+        setActiveTab("add");
+      }
+    }
+  }, [activeTab, handleNextRoom, canEdit]);
+
   // Send Reaction (available to all viewers & operators)
   const handleSendReact = useCallback(
     (emoji: "😂" | "😢") => {
@@ -143,6 +206,26 @@ export default function Console3D({
     pressAnimations.current.btnStart = 8;
     setActiveTab((prev) => (prev === "room" ? "directory" : "room"));
   }, []);
+
+  // Stable ref for event listeners in Three.js scene
+  const handlersRef = useRef({
+    handleActionA,
+    handleActionB,
+    handleDpadUp,
+    handleDpadDown,
+    handleDpadLeft,
+    handleDpadRight,
+    handleActionStart,
+  });
+  handlersRef.current = {
+    handleActionA,
+    handleActionB,
+    handleDpadUp,
+    handleDpadDown,
+    handleDpadLeft,
+    handleDpadRight,
+    handleActionStart,
+  };
 
   // Keyboard navigation
   useEffect(() => {
@@ -162,24 +245,16 @@ export default function Console3D({
         handleActionB();
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        if (activeTab === "directory") {
-          setFocusedDirectoryIndex((prev) => Math.max(0, prev - 1));
-        } else {
-          handlePrevRoom();
-        }
+        handleDpadUp();
       } else if (e.key === "ArrowDown") {
         e.preventDefault();
-        if (activeTab === "directory") {
-          setFocusedDirectoryIndex((prev) => Math.min(sessions.length - 1, prev + 1));
-        } else {
-          handleNextRoom();
-        }
+        handleDpadDown();
       } else if (e.key === "ArrowLeft") {
         e.preventDefault();
-        setActiveTab((prev) => (prev === "directory" ? "room" : prev === "add" ? "directory" : "room"));
+        handleDpadLeft();
       } else if (e.key === "ArrowRight") {
         e.preventDefault();
-        setActiveTab((prev) => (prev === "room" ? "directory" : canEdit ? "add" : "directory"));
+        handleDpadRight();
       } else if (e.key === "s" || e.key === "S") {
         e.preventDefault();
         handleActionStart();
@@ -188,7 +263,15 @@ export default function Console3D({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleActionA, handleActionB, handlePrevRoom, handleNextRoom, handleActionStart, activeTab, sessions.length, canEdit]);
+  }, [
+    handleActionA,
+    handleActionB,
+    handleDpadUp,
+    handleDpadDown,
+    handleDpadLeft,
+    handleDpadRight,
+    handleActionStart,
+  ]);
 
   // Three.js 3D Scene Initialization
   useEffect(() => {
@@ -398,19 +481,33 @@ export default function Console3D({
         hitObj = hitObj.parent;
       }
 
+      const handlers = handlersRef.current;
+
       if (hitObj === btnARef.current) {
-        handleActionA();
+        handlers.handleActionA();
       } else if (hitObj === btnBRef.current) {
-        handleActionB();
-      } else if (hitObj === dpadRef.current) {
-        const point = intersects[0].point;
-        if (point.y > -0.41) {
-          handlePrevRoom();
+        handlers.handleActionB();
+      } else if (hitObj === dpadRef.current && dpadRef.current) {
+        // Convert intersection to local D-Pad coordinates for accurate 4-way direction
+        const localPoint = dpadRef.current.worldToLocal(intersects[0].point.clone());
+        const absX = Math.abs(localPoint.x);
+        const absY = Math.abs(localPoint.y);
+
+        if (absY > absX) {
+          if (localPoint.y > 0) {
+            handlers.handleDpadUp();
+          } else {
+            handlers.handleDpadDown();
+          }
         } else {
-          handleNextRoom();
+          if (localPoint.x < 0) {
+            handlers.handleDpadLeft();
+          } else {
+            handlers.handleDpadRight();
+          }
         }
       } else if (hitObj === btnStartRef.current) {
-        handleActionStart();
+        handlers.handleActionStart();
       }
     };
 
@@ -452,20 +549,34 @@ export default function Console3D({
       // Button press z-offsets
       if (btnARef.current) {
         const p = pressAnimations.current.btnA;
-        btnARef.current.position.z = 0.20 - (p > 0 ? 0.03 : 0);
+        btnARef.current.position.z = 0.20 - (p > 0 ? 0.025 : 0);
         if (p > 0) pressAnimations.current.btnA--;
       }
 
       if (btnBRef.current) {
         const p = pressAnimations.current.btnB;
-        btnBRef.current.position.z = 0.20 - (p > 0 ? 0.03 : 0);
+        btnBRef.current.position.z = 0.20 - (p > 0 ? 0.025 : 0);
         if (p > 0) pressAnimations.current.btnB--;
       }
 
       if (btnStartRef.current) {
         const p = pressAnimations.current.btnStart;
-        btnStartRef.current.position.z = 0.19 - (p > 0 ? 0.02 : 0);
+        btnStartRef.current.position.z = 0.196 - (p > 0 ? 0.02 : 0);
         if (p > 0) pressAnimations.current.btnStart--;
+      }
+
+      // D-pad physical tilt and depression animation
+      if (dpadRef.current) {
+        if (pressAnimations.current.dpadTimer > 0) {
+          pressAnimations.current.dpadTimer--;
+          dpadRef.current.rotation.x = -pressAnimations.current.dpadY * 0.12;
+          dpadRef.current.rotation.y = pressAnimations.current.dpadX * 0.12;
+          dpadRef.current.position.z = 0.20 - 0.015;
+        } else {
+          dpadRef.current.rotation.x *= 0.6;
+          dpadRef.current.rotation.y *= 0.6;
+          dpadRef.current.position.z = 0.20;
+        }
       }
 
       renderer.render(scene, camera);
@@ -483,7 +594,7 @@ export default function Console3D({
       }
       renderer.dispose();
     };
-  }, [handleActionA, handleActionB, handlePrevRoom, handleNextRoom, handleActionStart]);
+  }, []);
 
   const handleFinishRename = () => {
     if (selectedSession && tempName.trim() && tempName.trim() !== selectedSession.name) {

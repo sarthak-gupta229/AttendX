@@ -9,6 +9,9 @@ import { ClientMsg, ServerMsg } from "@/lib/realtime/protocol";
 import { ConnectionState } from "./ConnectionStatus";
 import { StartupScreen } from "./StartupScreen";
 
+// IMPORTANT: defined outside the component so React never treats it as a new
+// component type between renders. Keeping it inside would cause Console3D to
+// fully unmount + remount (and reload all 9 OBJ files) on every state update.
 const Console3D = dynamic(() => import("./Console3D"), {
   ssr: false,
   loading: () => (
@@ -52,6 +55,11 @@ export function Board({
 
   const sessionsRef = useRef<SessionDTO[]>(sessions);
   sessionsRef.current = sessions;
+
+  // Keep selectedId in a ref so the connect callback never needs it as a dep.
+  // The WebSocket connection is independent of which session is currently selected.
+  const selectedIdRef = useRef<string | null>(selectedId);
+  selectedIdRef.current = selectedId;
 
   const selectedSession = sessions.find((s) => s.id === selectedId) || sessions[0] || null;
 
@@ -111,7 +119,7 @@ export function Board({
           if (msg.sessions.length > sessionsRef.current.length) {
             const newest = msg.sessions[msg.sessions.length - 1];
             setSelectedId(newest.id);
-          } else if (!selectedId && msg.sessions.length > 0) {
+          } else if (!selectedIdRef.current && msg.sessions.length > 0) {
             setSelectedId(msg.sessions[0].id);
           }
           setSessions(msg.sessions);
@@ -167,7 +175,7 @@ export function Board({
     ws.onerror = () => {
       ws.close();
     };
-  }, [resetHeartbeat, selectedId]);
+  }, [resetHeartbeat]);
 
   useEffect(() => {
     connect();
